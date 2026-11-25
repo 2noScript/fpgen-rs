@@ -1,0 +1,14 @@
+[package]
+name = "fpgen-rs"
+version = "1.3.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Rust port of fpgen (scrapfly/fingerprint-generator & JWriter20/fpgen-js)"
+repository = "https://github.com/2noScript/fpgen-rs"
+homepage = "https://github.com/2noScript/fpgen-rs"
+readme = "README.md"
+keywords = ["fingerprint", "browser-fingerprint", "fpgen", "bayesian-network", "anti-detect"]
+categories = ["web-programming", "simulation"]
+
+[dependencies]
+thiserror = "2"
