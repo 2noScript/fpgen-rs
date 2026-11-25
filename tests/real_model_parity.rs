@@ -118,4 +118,12 @@ fn generator_and_target_respect_conditions_and_keys() {
     }))
     .unwrap_err();
     assert!(matches!(impossible, FpgenError::RestrictiveConstraints(_)));
+
+    let ci_fp = generate(Some(GenerateOptions {
+        conditions: Some(json!({ "browser": "firefox", "os": "macOS" })),
+        strict: Some(true),
+        ..Default::default()
+    }))
+    .unwrap();
+    assert_eq!(ci_fp["navigator"]["platform"], "MacIntel");
 }

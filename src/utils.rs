@@ -289,12 +289,37 @@ pub fn query(target: &str, model: Option<&FpgenModel>) -> Result<Value> {
     }
 }
 
+fn py_equals_casefold(a: &Value, b: &Value) -> bool {
+    if py_equals(a, b) {
+        return true;
+    }
+    match (a, b) {
+        (Value::String(sa), Value::String(sb)) => casefold(sa) == casefold(sb),
+        (Value::Array(la), Value::Array(lb)) => {
+            la.len() == lb.len()
+                && la
+                    .iter()
+                    .zip(lb.iter())
+                    .all(|(x, y)| py_equals_casefold(x, y))
+        }
+        (Value::Object(ma), Value::Object(mb)) => {
+            ma.len() == mb.len()
+                && ma.iter().all(|(k, va)| {
+                    mb.iter()
+                        .find(|(kb, _)| casefold(kb) == casefold(k))
+                        .is_some_and(|(_, vb)| py_equals_casefold(va, vb))
+                })
+        }
+        _ => false,
+    }
+}
+
 fn value_matches_condition(candidate: &Value, expected: &Value) -> bool {
-    if py_equals(candidate, expected) {
+    if py_equals_casefold(candidate, expected) {
         return true;
     }
     if let Value::Array(options) = expected {
-        return options.iter().any(|opt| py_equals(candidate, opt));
+        return options.iter().any(|opt| py_equals_casefold(candidate, opt));
     }
     false
 }
